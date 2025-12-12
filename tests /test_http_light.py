@@ -4,9 +4,9 @@ import os
 
 ENV = os.environ.get("ENVIRONMENT", "dev").lower()
 if ENV == "prod":
-    BASE_URL = "http://10.48.229.153"  # or your prod LB IP if you changed it
+    BASE_URL = "http://10.48.229.153"
 else:
-    BASE_URL = "http://127.0.0.1:5000"  # Dev ClusterIP via port-forward
+    BASE_URL = "http://127.0.0.1:5000"
 
 class HttpLightTests(unittest.TestCase):
 
