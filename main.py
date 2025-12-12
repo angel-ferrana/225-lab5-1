@@ -9,66 +9,105 @@ app.secret_key = os.environ.get("SECRET_KEY", "dev-secret")
 DATABASE = '/nfs/demo.db'
 PER_PAGE_DEFAULT = 10
 
+
 def get_db():
     db = sqlite3.connect(DATABASE)
     db.row_factory = sqlite3.Row
     return db
 
+
 def init_db():
+    """Initialize the database with a simple books-for-sale table."""
     with app.app_context():
         db = get_db()
+
+        # Drop old table if it exists
+        db.execute("DROP TABLE IF EXISTS books")
+
+        # Create the new books table
         db.execute('''
-            CREATE TABLE IF NOT EXISTS contacts (
+            CREATE TABLE IF NOT EXISTS books (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                phone TEXT NOT NULL
+                title TEXT NOT NULL,
+                price REAL NOT NULL
             );
         ''')
+
+        # Optional sample data
+        sample_books = [
+            ("The DevOps Handbook", 29.99),
+            ("Python Crash Course", 24.50),
+            ("Clean Code", 32.00)
+        ]
+        db.executemany(
+            "INSERT INTO books (title, price) VALUES (?, ?)",
+            sample_books
+        )
+
         db.commit()
         db.close()
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
+
+    
+    # POST (Add, Update, Delete)
     if request.method == 'POST':
         action = request.form.get('action')
 
+        # DELETE BOOK
         if action == 'delete':
-            contact_id = request.form.get('contact_id')
-            if contact_id:
+            book_id = request.form.get('book_id')
+            if book_id:
                 db = get_db()
-                db.execute('DELETE FROM contacts WHERE id = ?', (contact_id,))
-                db.commit(); db.close()
-                flash('Contact deleted successfully.', 'success')
+                db.execute('DELETE FROM books WHERE id = ?', (book_id,))
+                db.commit()
+                db.close()
+                flash('Book deleted successfully.', 'success')
             else:
-                flash('Missing contact id.', 'danger')
+                flash('Missing book id.', 'danger')
             return redirect(url_for('index'))
 
+        # UPDATE BOOK
         if action == 'update':
-            contact_id = request.form.get('contact_id')
-            name = request.form.get('name')
-            phone = request.form.get('phone')
-            if contact_id and name and phone:
+            book_id = request.form.get('book_id')
+            title = request.form.get('title')
+            price = request.form.get('price')
+
+            if book_id and title and price:
                 db = get_db()
-                db.execute('UPDATE contacts SET name=?, phone=? WHERE id=?', (name, phone, contact_id))
-                db.commit(); db.close()
-                flash('Contact updated.', 'success')
+                db.execute('''
+                    UPDATE books
+                    SET title=?, price=?
+                    WHERE id=?
+                ''', (title, price, book_id))
+                db.commit()
+                db.close()
+                flash('Book updated.', 'success')
             else:
-                flash('Missing fields for update.', 'danger')
+                flash('Missing required fields for update.', 'danger')
             return redirect(url_for('index'))
 
-        # default → add
-        name = request.form.get('name')
-        phone = request.form.get('phone')
-        if name and phone:
+        # ADD NEW BOOK
+        title = request.form.get('title')
+        price = request.form.get('price')
+
+        if title and price:
             db = get_db()
-            db.execute('INSERT INTO contacts (name, phone) VALUES (?, ?)', (name, phone))
-            db.commit(); db.close()
-            flash('Contact added successfully.', 'success')
+            db.execute('''
+                INSERT INTO books (title, price)
+                VALUES (?, ?)
+            ''', (title, price))
+            db.commit()
+            db.close()
+            flash('Book added successfully.', 'success')
         else:
-            flash('Missing name or phone number.', 'danger')
+            flash('Title and price are required.', 'danger')
+
         return redirect(url_for('index'))
 
-    # GET: pagination
+    
     try:
         page = max(int(request.args.get('page', 1)), 1)
     except ValueError:
@@ -77,12 +116,13 @@ def index():
         per_page = max(int(request.args.get('per', PER_PAGE_DEFAULT)), 1)
     except ValueError:
         per_page = PER_PAGE_DEFAULT
+
     offset = (page - 1) * per_page
 
     db = get_db()
-    total = db.execute('SELECT COUNT(*) FROM contacts').fetchone()[0]
-    contacts = db.execute(
-        'SELECT * FROM contacts ORDER BY id DESC LIMIT ? OFFSET ?',
+    total = db.execute('SELECT COUNT(*) FROM books').fetchone()[0]
+    books = db.execute(
+        'SELECT * FROM books ORDER BY id DESC LIMIT ? OFFSET ?',
         (per_page, offset)
     ).fetchall()
     db.close()
@@ -95,7 +135,7 @@ def index():
 
     return render_template(
         'index.html',
-        contacts=contacts,
+        books=books,
         page=page, pages=pages, per_page=per_page,
         has_prev=has_prev, has_next=has_next, total=total,
         start_page=start_page, end_page=end_page
