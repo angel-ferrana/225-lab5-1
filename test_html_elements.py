@@ -12,16 +12,17 @@ class TestContacts(unittest.TestCase):
         firefox_options.add_argument("--no-sandbox")
         firefox_options.add_argument("--disable-dev-shm-usage")
         self.driver = webdriver.Firefox(options=firefox_options)
-
-    def test_contacts(self):
+    
+    def test_parts(self):
         driver = self.driver
-        driver.get("http://10.48.229.153/")  # Replace with your target website (your 'dev' site/clusterIP)
+        driver.get("http://10.48.229.153")  # Replace with your cluster/dev site
         
-        # Check for the presence of all 10 test contacts
+        # Check for the presence of all 10 test books
         for i in range(10):
-            test_name = f'Test Name {i}'
-            assert test_name in driver.page_source, f"Test contact {test_name} not found in page source"
-        print("Test completed successfully. All 10 test contacts were verified.")
+            test_name = f'Test Book {i}'
+            assert test_name in driver.page_source, f"Test book {test_name} not found in page source"
+        print("Test completed successfully. All 10 test books were verified.")
+
 
     def tearDown(self):
         self.driver.quit()
