@@ -4,7 +4,7 @@ import os
 
 ENV = os.environ.get("ENVIRONMENT", "dev").lower()
 if ENV == "prod":
-    BASE_URL = "http://10.48.229.55"  # or your prod LB IP if you changed it
+    BASE_URL = "http://10.48.229.56"  # or your prod LB IP if you changed it
 else:
     BASE_URL = "http://127.0.0.1:5000"  # Dev ClusterIP via port-forward
 
