@@ -1,12 +1,11 @@
-# 225lab4-2
+# 225lab5-1
 
-This is an extension of the persistent flask/sqlite3 app and adds in generated data and tests that it has been added with selenium.  Deploys to your __ClusterIP__  test data is added, and then it is deleted.  Please note: This requires persistence to be set up on your cluster!  Please do not attempt until it has been added!
+This is an individual assignment, you will build a NEW pipeline to demonstrate your ability to design a CI/CD pipeline, add appropriate steps for build, test, and deploy, and articulate the value of this endeavor.
 
-1) Fork this repository.
-2) View each file, and make changes where it is commented.
-3) The index.html page is in the templates directory.  You will also edit the Jenkinsfile, deployment-dev.yaml (your nfs directory and the container image), deployment-prod.yaml (your nfs directory, the container image and your load balancer IP) and test_html_elements.py (your cluster IP).
-4) Start your screencapture. Demonstrate your changes to the code in your video, and show the resulting web page.
-6) Run your pipeline.
-7) Open a web page and pull up your __ClusterIP__Refresh your web page during the test cycle AFTER Deploy Dev Environment, then again AFTER Reset DB, then again AFTER Run Acceptance Tests, and Finally AFTER Remove Test Data. Talk about what happened to the page as you refreshed it.
-
-Your Final project will use the same Jenkins steps as here AT A MINIMUM.
+1) Design a CI/CD pipeline that will build a Python Flask App and integrate a simple database.
+2) Add appropriate steps for the build
+3) Test the pipeline
+4) Deploy the pipeline
+5) Create a retrospective video identifying the value(s) of this work
+6) You will also demonstrate your build pipeline and your working app in class -or- via a video presentation (MUST include your voice!).
+7) Submit a URL link of your retrospective video to the assignment link.
